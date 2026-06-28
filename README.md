@@ -60,7 +60,7 @@ streamlit run app/app.py
 
 How to run this project:
 1. Clone the repository:
-git clone https://github.com/spencer1014/customer-churn-ai-dashboard.git
+git clone https://github.com/
 
 2. Install dependencies:
 pip install -r requirements.txt
