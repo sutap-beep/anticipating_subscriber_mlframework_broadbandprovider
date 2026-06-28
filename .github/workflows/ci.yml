@@ -40,4 +40,4 @@ jobs:
     # Step 5: Run your Python script/pipeline
     - name: Run model pipeline script
       run: |
-        python test_data_check.py
+        python tests/test_data_check.py
