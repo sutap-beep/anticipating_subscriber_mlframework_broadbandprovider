@@ -1,15 +1,72 @@
 import streamlit as st
-import pandas as pd
 import joblib
-import os
+import pandas as pd
+import matplotlib.pyplot as plt
 
-# load model
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "../models/churn_model.pkl")
-model = joblib.load(MODEL_PATH)
+model = joblib.load("../models/random_forest_model.pkl")
 
-st.title("Customer Churn Prediction")
+df = pd.read_csv("../data/processed_dataset.csv")
 
-# User input
+# CHURN DISTRIBUTION VISUALIZATION
+st.subheader("Subscriber Churn Distribution")
+
+fig, ax = plt.subplots(figsize=(8, 6))
+
+df['Churn'] = df['Churn'].map({0: 'No', 1: 'Yes'})
+
+df['Churn'].value_counts().plot(
+    kind="bar",
+    ax=ax
+)
+ax.set_xlabel("Churn")
+ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
+ax.set_ylabel("Number of Subscriber")
+ax.set_title("Subscriber Churn Distribution")
+
+st.pyplot(fig)
+
+# MONTHLY CHARGES DISTRIBUTION VISUALIZATION
+st.subheader("Monthly Charges Distribution")
+
+fig, ax = plt.subplots(figsize=(8, 6))
+
+ax.hist(df['MonthlyCharges'], bins=20)
+
+ax.set_xlabel("Monthly Charges")
+ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
+ax.set_ylabel("Number of Customers")
+ax.set_title("Distribution of Monthly Charges")
+
+st.pyplot(fig)
+
+# FEATURE IMPORTANCE VISUALIZATION
+X = df.drop("Churn", axis=1)
+
+feature_importance = pd.DataFrame({
+    "Feature":X.columns,
+    "Importance":model.feature_importances_
+}).sort_values("Importance",ascending=False)
+
+feature_importance = feature_importance.sort_values(
+    by="Importance",
+    ascending=False
+)
+
+st.subheader("Feature Importance")
+
+fig, ax = plt.subplots(figsize=(8, 6))
+
+ax.barh(
+    feature_importance["Feature"],
+    feature_importance["Importance"]
+)
+
+ax.invert_yaxis()
+
+st.pyplot(fig)
+
+
+# INTERACTIVE FEATURES 
 tenure = st.slider("Tenure", 0, 72, 12)
 
 monthly_charges = st.slider("Monthly Charges", 0, 150, 70)
@@ -28,7 +85,8 @@ contract = st.selectbox(
 
 # Example simplified input
 input_data = pd.DataFrame({
-    "gender": [1],
+    # For weak correlation, value is set to 0,1, some cases 2. 
+    "gender": [1], 
     "SeniorCitizen": [0],
     "Partner": [1],
     "Dependents": [0],
@@ -49,7 +107,7 @@ input_data = pd.DataFrame({
     "TotalCharges": [total_charges]
 })
 
-# Prediction
+# PREDICTION
 prediction = model.predict(input_data)
 
 probability = model.predict_proba(input_data)
@@ -61,3 +119,5 @@ else:
 
 
 st.write("Churn Probability:", probability[0][1])
+
+
