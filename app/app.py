@@ -3,9 +3,9 @@ import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
 
-model = joblib.load("../models/random_forest_model.pkl")
+model = joblib.load("models/random_forest_model.pkl")
 
-df = pd.read_csv("../data/processed_dataset.csv")
+df = pd.read_csv("data/processed_dataset.csv")
 
 # CHURN DISTRIBUTION VISUALIZATION
 st.subheader("Subscriber Churn Distribution")
